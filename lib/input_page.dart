@@ -3,11 +3,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'icon_content.dart';
 import 'reusable_card.dart';
 import 'size_config.dart';
-
-const Color activeCardColor = Color(0xff1D1E33);
-const Color accentButton = Color(0xffEE4266);
-const Color cardTextColor = Color(0xff8D8E98);
-const Color inactiveCardColor = Color(0xff111328);
+import 'globals.dart';
+import 'theme.dart';
 
 enum Gender { male, female }
 
@@ -19,6 +16,9 @@ class InputPage extends StatefulWidget {
 }
 
 class _InputPageState extends State<InputPage> {
+
+  int height = 180;
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -28,6 +28,7 @@ class _InputPageState extends State<InputPage> {
           title: Text('BMI CALCULATOR'),
         ),
         body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
                 child: Padding(
@@ -37,53 +38,84 @@ class _InputPageState extends State<InputPage> {
                 children: [
                   Expanded(
                       child: ReusableCard(
-                        onTap: () {
-                          setState(() {
+                    onTap: () {
+                      setState(() {
                         if (selectedGender == Gender.male) {
                           selectedGender = Gender.female;
                         } else {
                           selectedGender = Gender.male;
                         }
-                      }
-                          );},
-                        cardColor: selectedGender == Gender.male
-                            ? activeCardColor
-                            : inactiveCardColor,
-                        cardChild:
-                            GenderCard(icon: FontAwesomeIcons.mars, text: 'MALE'),
-                      )),
+                      });
+                    },
+                    cardColor: selectedGender == Gender.male
+                        ? activeCardColor
+                        : inactiveCardColor,
+                    cardChild:
+                        GenderCard(icon: FontAwesomeIcons.mars, text: 'MALE'),
+                  )),
                   Expanded(
                       child: ReusableCard(
-                        onTap: () {
-                          setState(() {
+                    onTap: () {
+                      setState(() {
                         if (selectedGender == Gender.female) {
                           selectedGender = Gender.male;
                         } else {
                           selectedGender = Gender.female;
                         }
-                      }
-                          );},
-                        cardColor: selectedGender == Gender.female
-                            ? activeCardColor
-                            : inactiveCardColor,
-                        cardChild: GenderCard(
-                            icon: FontAwesomeIcons.venus, text: 'FEMALE'),
-                      )),
+                      });
+                    },
+                    cardColor: selectedGender == Gender.female
+                        ? activeCardColor
+                        : inactiveCardColor,
+                    cardChild: GenderCard(
+                        icon: FontAwesomeIcons.venus, text: 'FEMALE'),
+                  )),
                 ],
               ),
             )),
             Expanded(
-                child: Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: SizeConfig.safeBlockHorizontal * 2),
-              child: Container(
-                margin: EdgeInsets.all(SizeConfig.safeBlockHorizontal * 3),
-                decoration: BoxDecoration(
-                    color: Color(0xff1D1E33),
-                    borderRadius: BorderRadius.circular(
-                        SizeConfig.safeBlockHorizontal * 3)),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.safeBlockHorizontal * 2),
+                child: ReusableCard(
+                  cardColor: activeCardColor,
+                  cardChild: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'HEIGHT',
+                        style: MyThemePack.labelTextStyle,
+                      ),
+                      Row(
+                        textBaseline: TextBaseline.alphabetic,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        children: [
+                          Text(height.toString(), style: MyThemePack.cardNumberStyle),
+                          Text(
+                            'cm',
+                            style: MyThemePack.labelTextStyle,
+                          )
+                        ],
+                      ),
+                      Slider(
+                        value: height.toDouble(),
+                        min: 50,
+                        max: 300,
+                        activeColor: accentButton,
+                        inactiveColor: Color(0xff3c3e5c),
+                        onChanged: (double newValue) {
+                          setState(() {
+                            height = newValue.toInt();
+                          });
+                        },
+
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            )),
+            ),
             Expanded(
                 child: Padding(
               padding: EdgeInsets.symmetric(

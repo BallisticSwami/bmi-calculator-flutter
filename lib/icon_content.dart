@@ -1,7 +1,6 @@
 import 'package:bmi_calculator/size_config.dart';
 import 'package:flutter/material.dart';
-
-Color cardTextColor = Color(0xff8D8E98);
+import 'globals.dart';
 
 class GenderCard extends StatelessWidget {
   final IconData icon;
