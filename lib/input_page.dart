@@ -7,6 +7,7 @@ import 'globals.dart';
 import 'theme.dart';
 
 enum Gender { male, female }
+enum Operation { add, subtract }
 
 Gender selectedGender = Gender.male;
 
@@ -16,8 +17,21 @@ class InputPage extends StatefulWidget {
 }
 
 class _InputPageState extends State<InputPage> {
-
   int height = 180;
+  int weight = 70;
+
+  Function changeWeight(Operation operation) {
+    return () {
+      setState(() {
+      if(operation == Operation.add) {
+        weight++;
+      }
+      else {
+        weight--;
+      }
+    });
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +39,11 @@ class _InputPageState extends State<InputPage> {
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text('BMI CALCULATOR'),
+          elevation: 0,
+          title: Text(
+            'BMI CALCULATOR',
+            style: TextStyle(fontSize: SizeConfig.safeBlockHorizontal * 4.8),
+          ),
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -91,25 +109,26 @@ class _InputPageState extends State<InputPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.baseline,
                         children: [
-                          Text(height.toString(), style: MyThemePack.cardNumberStyle),
+                          Text(height.toString(),
+                              style: MyThemePack.cardNumberStyle),
                           Text(
                             'cm',
                             style: MyThemePack.labelTextStyle,
                           )
                         ],
                       ),
-                      Slider(
-                        value: height.toDouble(),
-                        min: 50,
-                        max: 300,
-                        activeColor: accentButton,
-                        inactiveColor: Color(0xff3c3e5c),
-                        onChanged: (double newValue) {
-                          setState(() {
-                            height = newValue.toInt();
-                          });
-                        },
-
+                      SliderTheme(
+                        data: MyThemePack().getMySliderTheme(context),
+                        child: Slider(
+                          value: height.toDouble(),
+                          min: 50,
+                          max: 300,
+                          onChanged: (double newValue) {
+                            setState(() {
+                              height = newValue.toInt();
+                            });
+                          },
+                        ),
                       ),
                     ],
                   ),
@@ -122,7 +141,36 @@ class _InputPageState extends State<InputPage> {
                   horizontal: SizeConfig.safeBlockHorizontal * 2),
               child: Row(
                 children: [
-                  Expanded(child: ReusableCard(cardColor: activeCardColor)),
+                  Expanded(
+                      child: ReusableCard(
+                    cardColor: activeCardColor,
+                    cardChild: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('WEIGHT', style: MyThemePack.labelTextStyle),
+                        Text(
+                          weight.toString(),
+                          style: MyThemePack.cardNumberStyle,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            RoundIconButton(
+                              icon: FontAwesomeIcons.plus,
+                              onPressed: changeWeight(Operation.add),
+                            ),
+                            SizedBox(
+                              width: SizeConfig.safeBlockHorizontal * 4,
+                            ),
+                            RoundIconButton(
+                              icon: FontAwesomeIcons.minus,
+                              onPressed: changeWeight(Operation.subtract),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                  )),
                   Expanded(child: ReusableCard(cardColor: activeCardColor)),
                 ],
               ),

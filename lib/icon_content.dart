@@ -29,3 +29,26 @@ class GenderCard extends StatelessWidget {
     );
   }
 }
+
+class RoundIconButton extends StatelessWidget {
+
+  RoundIconButton({@required this.icon, @required this.onPressed});
+
+  final IconData icon;
+  final Function onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return RawMaterialButton(
+      child: Icon(icon, size: SizeConfig.safeBlockHorizontal*4.3,),
+      shape: CircleBorder(),
+      elevation: SizeConfig.safeBlockHorizontal * 2,
+      constraints: BoxConstraints.tightFor(
+        width: SizeConfig.safeBlockHorizontal * 13,
+        height: SizeConfig.safeBlockHorizontal * 13,
+      ),
+      fillColor: cardButtonColor,
+      onPressed: onPressed,
+    );
+  }
+}
