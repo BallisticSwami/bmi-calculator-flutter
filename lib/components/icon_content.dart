@@ -1,6 +1,6 @@
-import 'package:bmi_calculator/size_config.dart';
+import 'package:bmi_calculator/constants/size_config.dart';
+import 'package:bmi_calculator/constants/globals.dart';
 import 'package:flutter/material.dart';
-import 'globals.dart';
 
 class GenderCard extends StatelessWidget {
   final IconData icon;

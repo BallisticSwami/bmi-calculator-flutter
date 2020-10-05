@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'icon_content.dart';
-import 'reusable_card.dart';
-import 'size_config.dart';
-import 'globals.dart';
-import 'theme.dart';
+import 'package:bmi_calculator/components/icon_content.dart';
+import 'package:bmi_calculator/components/reusable_card.dart';
+import 'package:bmi_calculator/constants/size_config.dart';
+import 'package:bmi_calculator/constants/globals.dart';
+import 'package:bmi_calculator/constants/theme.dart';
+import 'results_page.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:vibration/vibration.dart';
+import 'package:bmi_calculator/services/calculator.dart';
 
-enum Gender { male, female }
 enum Operation { add, subtract }
-
-Gender selectedGender = Gender.male;
 
 class InputPage extends StatefulWidget {
   @override
@@ -20,6 +21,8 @@ class InputPage extends StatefulWidget {
 class _InputPageState extends State<InputPage> {
   bool _buttonPressed = false;
   bool _loopActive = false;
+  double opacityMale = 1;
+  double opacityFemale = 0.3;
 
   void _increaseWeightWhilePressed(Operation operation) async {
     if (_loopActive) return;
@@ -41,17 +44,17 @@ class _InputPageState extends State<InputPage> {
     _loopActive = false;
   }
 
-void _increaseAgeWhilePressed(Operation operation) async {
+  void _increaseAgeWhilePressed(Operation operation) async {
     if (_loopActive) return;
 
     _loopActive = true;
     while (_buttonPressed) {
-      if (age > 0 && age < 121) {
+      if (age > 1 && age < 121) {
         setState(() {
           if (operation == Operation.add) {
             if (age < 120) age++;
           } else {
-            if (age > 1) age--;
+            if (age > 2) age--;
           }
         });
       }
@@ -66,6 +69,7 @@ void _increaseAgeWhilePressed(Operation operation) async {
     SizeConfig().init(context);
     return Scaffold(
         appBar: AppBar(
+          brightness: Brightness.dark,
           centerTitle: true,
           elevation: 0,
           title: Text(
@@ -85,36 +89,56 @@ void _increaseAgeWhilePressed(Operation operation) async {
                   Expanded(
                       child: ReusableCard(
                     onTap: () {
+                      Vibration.vibrate(duration: 70);
                       setState(() {
                         if (selectedGender == Gender.male) {
                           selectedGender = Gender.female;
+                          opacityMale = 0.3;
+                          opacityFemale = 1;
                         } else {
                           selectedGender = Gender.male;
+                          opacityMale = 1;
+                          opacityFemale = 0.3;
                         }
                       });
                     },
                     cardColor: selectedGender == Gender.male
                         ? activeCardColor
                         : inactiveCardColor,
-                    cardChild:
-                        GenderCard(icon: FontAwesomeIcons.mars, text: 'MALE'),
+                    cardChild: AnimatedOpacity(
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.ease,
+                      opacity: opacityMale,
+                      child:
+                          GenderCard(icon: FontAwesomeIcons.mars, text: 'MALE'),
+                    ),
                   )),
                   Expanded(
                       child: ReusableCard(
                     onTap: () {
+                      Vibration.vibrate(duration: 70);
                       setState(() {
                         if (selectedGender == Gender.female) {
                           selectedGender = Gender.male;
+                          opacityMale = 1;
+                          opacityFemale = 0.3;
                         } else {
                           selectedGender = Gender.female;
+                          opacityMale = 0.3;
+                          opacityFemale = 1;
                         }
                       });
                     },
                     cardColor: selectedGender == Gender.female
                         ? activeCardColor
                         : inactiveCardColor,
-                    cardChild: GenderCard(
-                        icon: FontAwesomeIcons.venus, text: 'FEMALE'),
+                    cardChild: AnimatedOpacity(
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.ease,
+                      opacity: opacityFemale,
+                      child: GenderCard(
+                          icon: FontAwesomeIcons.venus, text: 'FEMALE'),
+                    ),
                   )),
                 ],
               ),
@@ -264,17 +288,46 @@ void _increaseAgeWhilePressed(Operation operation) async {
                 ],
               ),
             )),
-            Container(
-              margin: EdgeInsets.only(top: 10),
-              width: double.infinity,
-              height: SizeConfig.safeBlockVertical * 8.7,
-              decoration: BoxDecoration(
-                  color: accentButton,
-                  borderRadius: BorderRadius.only(
-                      topLeft:
-                          Radius.circular(SizeConfig.safeBlockHorizontal * 3),
-                      topRight:
-                          Radius.circular(SizeConfig.safeBlockHorizontal * 3))),
+            GestureDetector(
+              onTap: () {
+                CalculatorBrain calc = CalculatorBrain(
+                    height: height,
+                    weight: weight,
+                    age: age,
+                    gender: selectedGender);
+                Vibration.vibrate(duration: 70);
+
+                Navigator.push(
+                    context,
+                    PageTransition(
+                        child: ResultsPage(
+                          bmiResult: calc.calculateBMI(),
+                          resultText: calc.getResult(),
+                          feedback: calc.getFeedback(),
+                          tip: calc.getTip(),
+                        ),
+                        type: PageTransitionType.rightToLeft,
+                        curve: Curves.ease,
+                        duration: Duration(milliseconds: 200)));
+              },
+              child: Container(
+                child: Center(
+                  child: Text(
+                    'CALCULATE',
+                    style: MyThemePack.largeButtonTextStyle,
+                  ),
+                ),
+                margin: EdgeInsets.only(top: 10),
+                width: double.infinity,
+                height: SizeConfig.safeBlockVertical * 8.7,
+                decoration: BoxDecoration(
+                    color: accentButton,
+                    borderRadius: BorderRadius.only(
+                        topLeft:
+                            Radius.circular(SizeConfig.safeBlockHorizontal * 3),
+                        topRight: Radius.circular(
+                            SizeConfig.safeBlockHorizontal * 3))),
+              ),
             )
           ],
         ));
