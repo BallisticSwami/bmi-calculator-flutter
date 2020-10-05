@@ -31,8 +31,7 @@ class GenderCard extends StatelessWidget {
 }
 
 class RoundIconButton extends StatelessWidget {
-
-  RoundIconButton({@required this.icon, @required this.onPressed});
+  RoundIconButton({@required this.icon, this.onPressed});
 
   final IconData icon;
   final Function onPressed;
@@ -40,7 +39,10 @@ class RoundIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RawMaterialButton(
-      child: Icon(icon, size: SizeConfig.safeBlockHorizontal*4.3,),
+      child: Icon(
+        icon,
+        size: SizeConfig.safeBlockHorizontal * 4.3,
+      ),
       shape: CircleBorder(),
       elevation: SizeConfig.safeBlockHorizontal * 2,
       constraints: BoxConstraints.tightFor(

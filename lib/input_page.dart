@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'icon_content.dart';
 import 'reusable_card.dart';
@@ -17,20 +18,47 @@ class InputPage extends StatefulWidget {
 }
 
 class _InputPageState extends State<InputPage> {
-  int height = 180;
-  int weight = 70;
+  bool _buttonPressed = false;
+  bool _loopActive = false;
 
-  Function changeWeight(Operation operation) {
-    return () {
-      setState(() {
-      if(operation == Operation.add) {
-        weight++;
+  void _increaseWeightWhilePressed(Operation operation) async {
+    if (_loopActive) return;
+
+    _loopActive = true;
+    while (_buttonPressed) {
+      if (weight > 9 && weight < 501) {
+        setState(() {
+          if (operation == Operation.add) {
+            if (weight < 500) weight++;
+          } else {
+            if (weight > 10) weight--;
+          }
+        });
       }
-      else {
-        weight--;
+
+      await Future.delayed(Duration(milliseconds: 80));
+    }
+    _loopActive = false;
+  }
+
+void _increaseAgeWhilePressed(Operation operation) async {
+    if (_loopActive) return;
+
+    _loopActive = true;
+    while (_buttonPressed) {
+      if (age > 0 && age < 121) {
+        setState(() {
+          if (operation == Operation.add) {
+            if (age < 120) age++;
+          } else {
+            if (age > 1) age--;
+          }
+        });
       }
-    });
-    };
+
+      await Future.delayed(Duration(milliseconds: 90));
+    }
+    _loopActive = false;
   }
 
   @override
@@ -155,23 +183,84 @@ class _InputPageState extends State<InputPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            RoundIconButton(
-                              icon: FontAwesomeIcons.plus,
-                              onPressed: changeWeight(Operation.add),
+                            Listener(
+                              onPointerDown: (event) {
+                                _buttonPressed = true;
+                                _increaseWeightWhilePressed(Operation.add);
+                              },
+                              onPointerUp: (event) {
+                                _buttonPressed = false;
+                              },
+                              child: RoundIconButton(
+                                icon: FontAwesomeIcons.plus,
+                              ),
                             ),
                             SizedBox(
                               width: SizeConfig.safeBlockHorizontal * 4,
                             ),
-                            RoundIconButton(
-                              icon: FontAwesomeIcons.minus,
-                              onPressed: changeWeight(Operation.subtract),
+                            Listener(
+                              onPointerDown: (event) {
+                                _buttonPressed = true;
+                                _increaseWeightWhilePressed(Operation.subtract);
+                              },
+                              onPointerUp: (event) {
+                                _buttonPressed = false;
+                              },
+                              child: RoundIconButton(
+                                icon: FontAwesomeIcons.minus,
+                              ),
                             )
                           ],
                         ),
                       ],
                     ),
                   )),
-                  Expanded(child: ReusableCard(cardColor: activeCardColor)),
+                  Expanded(
+                      child: ReusableCard(
+                    cardColor: activeCardColor,
+                    cardChild: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('AGE', style: MyThemePack.labelTextStyle),
+                        Text(
+                          age.toString(),
+                          style: MyThemePack.cardNumberStyle,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Listener(
+                              onPointerDown: (event) {
+                                _buttonPressed = true;
+                                _increaseAgeWhilePressed(Operation.add);
+                              },
+                              onPointerUp: (event) {
+                                _buttonPressed = false;
+                              },
+                              child: RoundIconButton(
+                                icon: FontAwesomeIcons.plus,
+                              ),
+                            ),
+                            SizedBox(
+                              width: SizeConfig.safeBlockHorizontal * 4,
+                            ),
+                            Listener(
+                              onPointerDown: (event) {
+                                _buttonPressed = true;
+                                _increaseAgeWhilePressed(Operation.subtract);
+                              },
+                              onPointerUp: (event) {
+                                _buttonPressed = false;
+                              },
+                              child: RoundIconButton(
+                                icon: FontAwesomeIcons.minus,
+                              ),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                  )),
                 ],
               ),
             )),
