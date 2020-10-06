@@ -39,7 +39,7 @@ class _InputPageState extends State<InputPage> {
         });
       }
 
-      await Future.delayed(Duration(milliseconds: 100));
+      await Future.delayed(Duration(milliseconds: 85));
     }
     _loopActive = false;
   }
@@ -59,7 +59,7 @@ class _InputPageState extends State<InputPage> {
         });
       }
 
-      await Future.delayed(Duration(milliseconds: 100));
+      await Future.delayed(Duration(milliseconds: 90));
     }
     _loopActive = false;
   }
